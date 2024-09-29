@@ -7,7 +7,7 @@ import (
 	"golox/token"
 )
 
-func TestScanTokens_SingleCharacters(t *testing.T) {
+func TestScanTokens_Characters(t *testing.T) {
 	tests := []struct {
 		input          string
 		expectedTokens []token.Token
@@ -72,5 +72,50 @@ func TestScanTokens_SingleCharacters(t *testing.T) {
 		if !reflect.DeepEqual(l.tokens, tt.expectedTokens) {
 			t.Errorf("For input %q, expected tokens %v, but got %v", tt.input, tt.expectedTokens, l.tokens)
 		}
+	}
+}
+
+func TestScanTokens_StringLiterals(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          string
+		expectedTokens []token.Token
+	}{
+		{
+			name:  "Normal string",
+			input: `"hello"`,
+			expectedTokens: []token.Token{
+				{Type: token.STRING, Lexeme: `"hello"`, Literal: "hello", Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
+		{
+			name:  "Empty string",
+			input: `""`,
+			expectedTokens: []token.Token{
+				{Type: token.STRING, Lexeme: `""`, Literal: "", Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
+		{
+			name:  "Unterminated string",
+			input: `"hello`,
+			expectedTokens: []token.Token{
+				{Type: token.ILLEGAL, Lexeme: `"hello`, Literal: nil, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := New(tt.input)
+
+			l.scanTokens()
+
+			if !reflect.DeepEqual(l.tokens, tt.expectedTokens) {
+				t.Errorf("Test %s failed. Expected tokens: %v, but got: %v", tt.name, tt.expectedTokens, l.tokens)
+			}
+		})
 	}
 }
