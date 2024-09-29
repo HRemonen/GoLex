@@ -8,15 +8,12 @@ package main
 
 import (
 	"fmt"
-	"os/user"
+	"golox/repl"
+	"os"
 )
 
 func main() {
-	user, err := user.Current()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println("Welcome to GoLox!\n Feel free to type in commands")
 
-	fmt.Printf("Hello %s! This is the Go Lex programming language!\n",
-		user.Username)
+	repl.Start(os.Stdin, os.Stdout)
 }
