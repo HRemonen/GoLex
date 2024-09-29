@@ -119,7 +119,7 @@ func (l *Lexer) number() (float64, error) {
 	return strconv.ParseFloat(value, 64)
 }
 
-func (l *Lexer) identifier() (token.Type, error) {
+func (l *Lexer) identifier() token.Type {
 	for l.isAlphaNumeric(l.peek()) {
 		l.advance()
 	}
@@ -131,7 +131,7 @@ func (l *Lexer) identifier() (token.Type, error) {
 		tokenType = token.IDENTIFIER
 	}
 
-	return tokenType, nil
+	return tokenType
 }
 
 //nolint:funlen,gocyclo // This function is long and complex because it has to handle all the different token types
@@ -213,11 +213,7 @@ func (l *Lexer) scanToken() {
 			l.addToken(token.NUMBER, value)
 			break
 		} else if l.isAlpha(c) {
-			value, err := l.identifier()
-			if err != nil {
-				l.addToken(token.ILLEGAL, nil)
-				break
-			}
+			value := l.identifier()
 
 			l.addToken(value, nil)
 			break
@@ -242,6 +238,7 @@ func (l *Lexer) addToken(tokenType token.Type, literal interface{}) {
 	})
 }
 
+// ScanTokens scans the source code and converts it into a list of tokens
 func (l *Lexer) ScanTokens() {
 	for !l.isAtEnd() {
 		l.start = l.current
