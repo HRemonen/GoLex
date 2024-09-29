@@ -13,7 +13,7 @@ func TestScanTokens_SingleCharacters(t *testing.T) {
 		expectedTokens []token.Token
 	}{
 		{
-			input: "(){}.,-+*;",
+			input: "(){}.,-+;/*",
 			expectedTokens: []token.Token{
 				{Type: token.LEFT_PAREN, Lexeme: "(", Literal: nil, Line: 1},
 				{Type: token.RIGHT_PAREN, Lexeme: ")", Literal: nil, Line: 1},
@@ -23,12 +23,12 @@ func TestScanTokens_SingleCharacters(t *testing.T) {
 				{Type: token.COMMA, Lexeme: ",", Literal: nil, Line: 1},
 				{Type: token.MINUS, Lexeme: "-", Literal: nil, Line: 1},
 				{Type: token.PLUS, Lexeme: "+", Literal: nil, Line: 1},
-				{Type: token.STAR, Lexeme: "*", Literal: nil, Line: 1},
 				{Type: token.SEMICOLON, Lexeme: ";", Literal: nil, Line: 1},
+				{Type: token.SLASH, Lexeme: "/", Literal: nil, Line: 1},
+				{Type: token.STAR, Lexeme: "*", Literal: nil, Line: 1},
 				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
 			},
 		},
-		// You can add more test cases here
 	}
 
 	for _, tt := range tests {
