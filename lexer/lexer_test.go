@@ -85,14 +85,14 @@ func TestScanTokens_Characters(t *testing.T) {
 	}
 }
 
-func TestScanTokens_StringLiterals(t *testing.T) {
+func TestScanTokens_Literals(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          string
 		expectedTokens []token.Token
 	}{
 		{
-			name:  "Normal string",
+			name:  "STRING: Normal string",
 			input: `"hello"`,
 			expectedTokens: []token.Token{
 				{Type: token.STRING, Lexeme: `"hello"`, Literal: "hello", Line: 1},
@@ -100,7 +100,7 @@ func TestScanTokens_StringLiterals(t *testing.T) {
 			},
 		},
 		{
-			name:  "Empty string",
+			name:  "STRING: Empty string",
 			input: `""`,
 			expectedTokens: []token.Token{
 				{Type: token.STRING, Lexeme: `""`, Literal: "", Line: 1},
@@ -108,7 +108,7 @@ func TestScanTokens_StringLiterals(t *testing.T) {
 			},
 		},
 		{
-			name:  "Unterminated string",
+			name:  "STRING: Unterminated string",
 			input: `"hello`,
 			expectedTokens: []token.Token{
 				{Type: token.ILLEGAL, Lexeme: `"hello`, Literal: nil, Line: 1},
