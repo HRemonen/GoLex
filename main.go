@@ -1,5 +1,5 @@
 /*
-Go Lex programming language is a simple programming language that is
+Go Lox programming language is a simple programming language that is
 following the book "Crafting Interpreters" by Bob Nystrom. This is a
 learning project for me to understand how interpreters work and how to
 write one.
