@@ -9,10 +9,12 @@ import (
 
 func TestScanTokens_Characters(t *testing.T) {
 	tests := []struct {
+		name           string
 		input          string
 		expectedTokens []token.Token
 	}{
 		{
+			name:  "Single character tokens",
 			input: "(){}.,-+;/*",
 			expectedTokens: []token.Token{
 				{Type: token.LEFT_PAREN, Lexeme: "(", Literal: nil, Line: 1},
@@ -30,6 +32,7 @@ func TestScanTokens_Characters(t *testing.T) {
 			},
 		},
 		{
+			name:  "Unrecognized characters",
 			input: "@#^",
 			expectedTokens: []token.Token{
 				{Type: token.ILLEGAL, Lexeme: "@", Literal: nil, Line: 1},
@@ -39,18 +42,21 @@ func TestScanTokens_Characters(t *testing.T) {
 			},
 		},
 		{
+			name:  "Comment withouth newline",
 			input: "// This is a comment",
 			expectedTokens: []token.Token{
 				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
 			},
 		},
 		{
+			name:  "Comment with newline",
 			input: "// This is also a comment\n",
 			expectedTokens: []token.Token{
 				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 2},
 			},
 		},
 		{
+			name:  "One or two character operators",
 			input: "! != = == < <= > >=",
 			expectedTokens: []token.Token{
 				{Type: token.BANG, Lexeme: "!", Literal: nil, Line: 1},
@@ -67,11 +73,15 @@ func TestScanTokens_Characters(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := New(tt.input)
-		l.scanTokens()
-		if !reflect.DeepEqual(l.tokens, tt.expectedTokens) {
-			t.Errorf("For input %q, expected tokens %v, but got %v", tt.input, tt.expectedTokens, l.tokens)
-		}
+		t.Run(tt.name, func(t *testing.T) {
+			l := New(tt.input)
+
+			l.scanTokens()
+
+			if !reflect.DeepEqual(l.tokens, tt.expectedTokens) {
+				t.Errorf("Test %s failed. Expected tokens: %v, but got: %v", tt.name, tt.expectedTokens, l.tokens)
+			}
+		})
 	}
 }
 
