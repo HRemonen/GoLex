@@ -30,6 +30,8 @@ Go Lox supports the following data types:
   "Hello world!";
   ""; // Empty string
   ```
+
+  You can read more information about [strings](./strings.md) in Go Lox.
 - *Null*. Null is used for "no value" values. Original JLox features `nil` as the nullish value, but since the intepreter here is writtern in Go, which already has nil, we are going to use `null`.
 
 
