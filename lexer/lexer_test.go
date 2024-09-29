@@ -44,6 +44,26 @@ func TestScanTokens_SingleCharacters(t *testing.T) {
 				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
 			},
 		},
+		{
+			input: "// This is also a comment\n",
+			expectedTokens: []token.Token{
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 2},
+			},
+		},
+		{
+			input: "! != = == < <= > >=",
+			expectedTokens: []token.Token{
+				{Type: token.BANG, Lexeme: "!", Literal: nil, Line: 1},
+				{Type: token.BANG_EQUAL, Lexeme: "!=", Literal: nil, Line: 1},
+				{Type: token.EQUAL, Lexeme: "=", Literal: nil, Line: 1},
+				{Type: token.EQUAL_EQUAL, Lexeme: "==", Literal: nil, Line: 1},
+				{Type: token.LESS, Lexeme: "<", Literal: nil, Line: 1},
+				{Type: token.LESS_EQUAL, Lexeme: "<=", Literal: nil, Line: 1},
+				{Type: token.GREATER, Lexeme: ">", Literal: nil, Line: 1},
+				{Type: token.GREATER_EQUAL, Lexeme: ">=", Literal: nil, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
 	}
 
 	for _, tt := range tests {
