@@ -1,3 +1,8 @@
+/*
+Package lexer implements the lexer for the Lox programming language. The lexer
+is responsible for scanning the source code and converting it into a list of
+tokens that the parser can consume.
+*/
 package lexer
 
 import (
@@ -62,7 +67,7 @@ func (l *Lexer) string() (string, error) {
 	}
 
 	if l.isAtEnd() {
-		return "", fmt.Errorf("Unterminated string")
+		return "", fmt.Errorf("unterminated string")
 	}
 
 	// The closing "
@@ -73,6 +78,7 @@ func (l *Lexer) string() (string, error) {
 	return value, nil
 }
 
+//nolint:funlen,gocyclo // This function is long and complex because it has to handle all the different token types
 func (l *Lexer) scanToken() {
 	c := l.advance()
 
@@ -130,13 +136,9 @@ func (l *Lexer) scanToken() {
 			break
 		}
 		l.addToken(token.GREATER, nil)
-	case ' ', '\r', '\t':
-		// Ignore whitespace
-		break
+	case ' ', '\r', '\t': // Ignore whitespace
 	case '\n':
-		l.line++
-		// Ignore newline
-		break
+		l.line++ // Ignore newline
 	case '"':
 		// String literals
 		value, err := l.string()
@@ -156,7 +158,7 @@ func (l *Lexer) advance() rune {
 	return rune(l.source[l.current-1])
 }
 
-func (l *Lexer) addToken(tokenType token.TokenType, literal interface{}) {
+func (l *Lexer) addToken(tokenType token.Type, literal interface{}) {
 	text := l.source[l.start:l.current]
 	l.tokens = append(l.tokens, token.Token{
 		Type:    tokenType,

@@ -5,15 +5,18 @@ package token
 
 import "fmt"
 
-type TokenType string
+// Type is a string that represents the type of the token
+type Type string
 
+// Token is the struct that holds the token information
 type Token struct {
-	Type    TokenType   // The type of the toke. See the constants below
+	Type    Type        // The type of the toke. See the constants below
 	Lexeme  string      // The actual string of the token
 	Literal interface{} // The literal value of the token
 	Line    int         // Line number where the token was found
 }
 
+//nolint:revive,stylecheck // Constants are in uppercase
 const (
 	// Single-character tokens
 	LEFT_PAREN  = "("
@@ -65,10 +68,12 @@ const (
 	EOF     = "EOF"
 )
 
-func New(t TokenType, l string, lit interface{}, line int) *Token {
+// New creates a new token
+func New(t Type, l string, lit interface{}, line int) *Token {
 	return &Token{Type: t, Lexeme: l, Literal: lit, Line: line}
 }
 
+// String returns the string representation of the token
 func (t *Token) String() string {
 	return fmt.Sprintf("%v %v %v", t.Type, t.Lexeme, t.Literal)
 }

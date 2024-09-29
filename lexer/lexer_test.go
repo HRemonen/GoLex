@@ -1,12 +1,12 @@
 package lexer
 
 import (
+	"golox/token"
 	"reflect"
 	"testing"
-
-	"golox/token"
 )
 
+//nolint:funlen // This is a test function
 func TestScanTokens_Characters(t *testing.T) {
 	tests := []struct {
 		name           string
