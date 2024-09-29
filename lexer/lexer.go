@@ -176,6 +176,13 @@ func (l *Lexer) scanToken() {
 		l.addToken(token.PLUS, nil)
 	case ';':
 		l.addToken(token.SEMICOLON, nil)
+	case '*':
+		l.addToken(token.STAR, nil)
+	case ' ', '\r', '\t': 
+		// Ignore whitespace
+	case '\n': 
+		// Ignore newline
+		l.line++
 	case '/':
 		if l.match('/') {
 			// A comment goes until the end of the line
@@ -192,8 +199,6 @@ func (l *Lexer) scanToken() {
 			break
 		}
 		l.addToken(token.SLASH, nil)
-	case '*':
-		l.addToken(token.STAR, nil)
 	case '!':
 		if l.match('=') {
 			l.addToken(token.BANG_EQUAL, nil)
@@ -218,9 +223,6 @@ func (l *Lexer) scanToken() {
 			break
 		}
 		l.addToken(token.GREATER, nil)
-	case ' ', '\r', '\t': // Ignore whitespace
-	case '\n': // Ignore newline
-		l.line++
 	case '"': // String literals
 		value, err := l.string()
 		if err != nil {
