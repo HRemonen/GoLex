@@ -14,7 +14,7 @@ import (
 // Lexer is the struct that holds the state of the lexer
 type Lexer struct {
 	source  string
-	tokens  []token.Token
+	Tokens  []token.Token
 	start   int // Start of the current lexeme
 	current int // Current character being looked at
 	line    int // Current line number
@@ -24,7 +24,7 @@ type Lexer struct {
 func New(source string) *Lexer {
 	return &Lexer{
 		source:  source,
-		tokens:  []token.Token{},
+		Tokens:  []token.Token{},
 		start:   0,
 		current: 0,
 		line:    1,
@@ -38,6 +38,14 @@ func (l *Lexer) isAtEnd() bool {
 
 func (l *Lexer) isDigit(c rune) bool {
 	return c >= '0' && c <= '9'
+}
+
+func (l *Lexer) isAlpha(c rune) bool {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+}
+
+func (l *Lexer) isAlphaNumeric(c rune) bool {
+	return l.isAlpha(c) || l.isDigit(c)
 }
 
 // match checks if the current character matches the expected character
@@ -111,6 +119,21 @@ func (l *Lexer) number() (float64, error) {
 	return strconv.ParseFloat(value, 64)
 }
 
+func (l *Lexer) identifier() (token.Type, error) {
+	for l.isAlphaNumeric(l.peek()) {
+		l.advance()
+	}
+
+	text := l.source[l.start:l.current]
+
+	tokenType, ok := token.Keywords[text]
+	if !ok {
+		tokenType = token.IDENTIFIER
+	}
+
+	return tokenType, nil
+}
+
 //nolint:funlen,gocyclo // This function is long and complex because it has to handle all the different token types
 func (l *Lexer) scanToken() {
 	c := l.advance()
@@ -180,7 +203,7 @@ func (l *Lexer) scanToken() {
 		}
 		l.addToken(token.STRING, value)
 	default:
-		if (l.isDigit(c)) {
+		if l.isDigit(c) {
 			value, err := l.number()
 			if err != nil {
 				l.addToken(token.ILLEGAL, nil)
@@ -188,6 +211,15 @@ func (l *Lexer) scanToken() {
 			}
 
 			l.addToken(token.NUMBER, value)
+			break
+		} else if l.isAlpha(c) {
+			value, err := l.identifier()
+			if err != nil {
+				l.addToken(token.ILLEGAL, nil)
+				break
+			}
+
+			l.addToken(value, nil)
 			break
 		}
 
@@ -202,7 +234,7 @@ func (l *Lexer) advance() rune {
 
 func (l *Lexer) addToken(tokenType token.Type, literal interface{}) {
 	text := l.source[l.start:l.current]
-	l.tokens = append(l.tokens, token.Token{
+	l.Tokens = append(l.Tokens, token.Token{
 		Type:    tokenType,
 		Lexeme:  text,
 		Literal: literal,
@@ -210,14 +242,14 @@ func (l *Lexer) addToken(tokenType token.Type, literal interface{}) {
 	})
 }
 
-func (l *Lexer) scanTokens() {
+func (l *Lexer) ScanTokens() {
 	for !l.isAtEnd() {
 		l.start = l.current
 		l.scanToken()
 	}
 
 	// Add EOF token to the end of the tokens list
-	l.tokens = append(l.tokens, token.Token{
+	l.Tokens = append(l.Tokens, token.Token{
 		Type:    token.EOF,
 		Lexeme:  "",
 		Literal: nil,

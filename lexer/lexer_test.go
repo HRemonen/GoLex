@@ -76,10 +76,10 @@ func TestScanTokens_Characters(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			l := New(tt.input)
 
-			l.scanTokens()
+			l.ScanTokens()
 
-			if !reflect.DeepEqual(l.tokens, tt.expectedTokens) {
-				t.Errorf("Test %s failed. Expected tokens: %v, but got: %v", tt.name, tt.expectedTokens, l.tokens)
+			if !reflect.DeepEqual(l.Tokens, tt.expectedTokens) {
+				t.Errorf("Test %s failed. Expected tokens: %v, but got: %v", tt.name, tt.expectedTokens, l.Tokens)
 			}
 		})
 	}
@@ -137,10 +137,10 @@ func TestScanTokens_Literals(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			l := New(tt.input)
 
-			l.scanTokens()
+			l.ScanTokens()
 
-			if !reflect.DeepEqual(l.tokens, tt.expectedTokens) {
-				t.Errorf("Test %s failed. Expected tokens: %v, but got: %v", tt.name, tt.expectedTokens, l.tokens)
+			if !reflect.DeepEqual(l.Tokens, tt.expectedTokens) {
+				t.Errorf("Test %s failed. Expected tokens: %v, but got: %v", tt.name, tt.expectedTokens, l.Tokens)
 			}
 		})
 	}

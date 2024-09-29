@@ -68,6 +68,26 @@ const (
 	EOF     = "EOF"
 )
 
+// Keywords is a map of all the reserved keywords in the language
+var Keywords = map[string]Type{
+	"and":    AND,
+	"class":  CLASS,
+	"else":   ELSE,
+	"false":  FALSE,
+	"for":    FOR,
+	"fun":    FUN,
+	"if":     IF,
+	"null":   NULL,
+	"or":     OR,
+	"print":  PRINT,
+	"return": RETURN,
+	"super":  SUPER,
+	"this":   THIS,
+	"true":   TRUE,
+	"var":    VAR,
+	"while":  WHILE,
+}
+
 // New creates a new token
 func New(t Type, l string, lit interface{}, line int) *Token {
 	return &Token{Type: t, Lexeme: l, Literal: lit, Line: line}
