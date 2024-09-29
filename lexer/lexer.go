@@ -75,16 +75,47 @@ func (l *Lexer) scanToken() {
 	case ';':
 		l.addToken(token.SEMICOLON, nil)
 	case '/':
-		if (l.match('/')) {
+		if l.match('/') {
 			// A comment goes until the end of the line
-			for (l.peek() != '\n' && !l.isAtEnd()) {
+			for l.peek() != '\n' && !l.isAtEnd() {
 				l.advance()
 			}
-		} else {
-			l.addToken(token.SLASH, nil)
+			break
 		}
+		l.addToken(token.SLASH, nil)
 	case '*':
 		l.addToken(token.STAR, nil)
+	case '!':
+		if l.match('=') {
+			l.addToken(token.BANG_EQUAL, nil)
+			break
+		}
+		l.addToken(token.BANG, nil)
+	case '=':
+		if l.match('=') {
+			l.addToken(token.EQUAL_EQUAL, nil)
+			break
+		}
+		l.addToken(token.EQUAL, nil)
+	case '<':
+		if l.match('=') {
+			l.addToken(token.LESS_EQUAL, nil)
+			break
+		}
+		l.addToken(token.LESS, nil)
+	case '>':
+		if l.match('=') {
+			l.addToken(token.GREATER_EQUAL, nil)
+			break
+		}
+		l.addToken(token.GREATER, nil)
+	case ' ', '\r', '\t':
+		// Ignore whitespace
+		break
+	case '\n':
+		l.line++
+		// Ignore newline
+		break
 	default:
 		// If we reach here, it means we have an unexpected character
 		l.addToken(token.ILLEGAL, nil)
