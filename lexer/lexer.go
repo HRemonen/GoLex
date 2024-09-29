@@ -29,6 +29,29 @@ func (l *Lexer) isAtEnd() bool {
 	return l.current >= len(l.source)
 }
 
+// match checks if the current character matches the expected character
+func (l *Lexer) match(expected rune) bool {
+	if l.isAtEnd() {
+		return false
+	}
+
+	if rune(l.source[l.current]) != expected {
+		return false
+	}
+
+	l.current++
+	return true
+}
+
+// peek returns the next character in the source code
+func (l *Lexer) peek() rune {
+	if l.isAtEnd() {
+		return '\x00'
+	}
+
+	return rune(l.source[l.current])
+}
+
 func (l *Lexer) scanToken() {
 	c := l.advance()
 
@@ -51,6 +74,15 @@ func (l *Lexer) scanToken() {
 		l.addToken(token.PLUS, nil)
 	case ';':
 		l.addToken(token.SEMICOLON, nil)
+	case '/':
+		if (l.match('/')) {
+			// A comment goes until the end of the line
+			for (l.peek() != '\n' && !l.isAtEnd()) {
+				l.advance()
+			}
+		} else {
+			l.addToken(token.SLASH, nil)
+		}
 	case '*':
 		l.addToken(token.STAR, nil)
 	default:
