@@ -61,8 +61,6 @@ func (l *Lexer) string() (string, error) {
 		l.advance()
 	}
 
-	fmt.Println(l.peek())
-
 	if l.isAtEnd() {
 		return "", fmt.Errorf("Unterminated string")
 	}
@@ -72,7 +70,6 @@ func (l *Lexer) string() (string, error) {
 
 	// Trim the surrounding quotes
 	value := l.source[l.start+1 : l.current-1]
-	fmt.Println(value)
 	return value, nil
 }
 
