@@ -3,11 +3,15 @@ Package token defines the token type and the token struct.
 */
 package token
 
+import "fmt"
+
 type TokenType string
 
 type Token struct {
-	Type    TokenType
-	Literal string
+	Type    TokenType   // The type of the toke. See the constants below
+	Lexeme  string      // The actual string of the token
+	Literal interface{} // The literal value of the token
+	Line    int         // Line number where the token was found
 }
 
 const (
@@ -60,3 +64,11 @@ const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
 )
+
+func New(t TokenType, l string, lit interface{}, line int) *Token {
+	return &Token{Type: t, Lexeme: l, Literal: lit, Line: line}
+}
+
+func (t *Token) String() string {
+	return fmt.Sprintf("%v %v %v", t.Type, t.Lexeme, t.Literal)
+}
