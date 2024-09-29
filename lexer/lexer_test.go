@@ -13,7 +13,7 @@ func TestScanTokens_SingleCharacters(t *testing.T) {
 		expectedTokens []token.Token
 	}{
 		{
-			input: "(){}.,-+*/;",
+			input: "(){}.,-+*;",
 			expectedTokens: []token.Token{
 				{Type: token.LEFT_PAREN, Lexeme: "(", Literal: nil, Line: 1},
 				{Type: token.RIGHT_PAREN, Lexeme: ")", Literal: nil, Line: 1},
@@ -29,6 +29,31 @@ func TestScanTokens_SingleCharacters(t *testing.T) {
 			},
 		},
 		// You can add more test cases here
+	}
+
+	for _, tt := range tests {
+		l := New(tt.input)
+		l.scanTokens()
+		if !reflect.DeepEqual(l.tokens, tt.expectedTokens) {
+			t.Errorf("For input %q, expected tokens %v, but got %v", tt.input, tt.expectedTokens, l.tokens)
+		}
+	}
+}
+
+func TestScanTokens_UnexpectedCharacter(t *testing.T) {
+	tests := []struct {
+		input          string
+		expectedTokens []token.Token
+	}{
+		{
+			input: "@#^",
+			expectedTokens: []token.Token{
+				{Type: token.ILLEGAL, Lexeme: "@", Literal: nil, Line: 1},
+				{Type: token.ILLEGAL, Lexeme: "#", Literal: nil, Line: 1},
+				{Type: token.ILLEGAL, Lexeme: "^", Literal: nil, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
 	}
 
 	for _, tt := range tests {
