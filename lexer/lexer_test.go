@@ -115,6 +115,22 @@ func TestScanTokens_Literals(t *testing.T) {
 				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
 			},
 		},
+		{
+			name:  "NUMBER: Integer",
+			input: "123",
+			expectedTokens: []token.Token{
+				{Type: token.NUMBER, Lexeme: "123", Literal: 123.0, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
+		{
+			name:  "NUMBER: Float",
+			input: "123.45",
+			expectedTokens: []token.Token{
+				{Type: token.NUMBER, Lexeme: "123.45", Literal: 123.45, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
 	}
 
 	for _, tt := range tests {

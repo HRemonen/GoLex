@@ -8,6 +8,7 @@ package lexer
 import (
 	"fmt"
 	"golox/token"
+	"strconv"
 )
 
 // Lexer is the struct that holds the state of the lexer
@@ -35,6 +36,10 @@ func (l *Lexer) isAtEnd() bool {
 	return l.current >= len(l.source)
 }
 
+func (l *Lexer) isDigit(c rune) bool {
+	return c >= '0' && c <= '9'
+}
+
 // match checks if the current character matches the expected character
 func (l *Lexer) match(expected rune) bool {
 	if l.isAtEnd() {
@@ -58,6 +63,15 @@ func (l *Lexer) peek() rune {
 	return rune(l.source[l.current])
 }
 
+// peekNext returns the character after the next character in the source code
+func (l *Lexer) peekNext() rune {
+	if l.current+1 >= len(l.source) {
+		return '\x00'
+	}
+
+	return rune(l.source[l.current+1])
+}
+
 func (l *Lexer) string() (string, error) {
 	for l.peek() != '"' && !l.isAtEnd() {
 		if l.peek() == '\n' {
@@ -76,6 +90,25 @@ func (l *Lexer) string() (string, error) {
 	// Trim the surrounding quotes
 	value := l.source[l.start+1 : l.current-1]
 	return value, nil
+}
+
+func (l *Lexer) number() (float64, error) {
+	for l.isDigit(l.peek()) {
+		l.advance()
+	}
+
+	// Look for a fractional part
+	if l.peek() == '.' && l.isDigit(l.peekNext()) {
+		// Consume the "."
+		l.advance()
+
+		for l.isDigit(l.peek()) {
+			l.advance()
+		}
+	}
+
+	value := l.source[l.start:l.current]
+	return strconv.ParseFloat(value, 64)
 }
 
 //nolint:funlen,gocyclo // This function is long and complex because it has to handle all the different token types
@@ -137,10 +170,9 @@ func (l *Lexer) scanToken() {
 		}
 		l.addToken(token.GREATER, nil)
 	case ' ', '\r', '\t': // Ignore whitespace
-	case '\n':
-		l.line++ // Ignore newline
-	case '"':
-		// String literals
+	case '\n': // Ignore newline
+		l.line++
+	case '"': // String literals
 		value, err := l.string()
 		if err != nil {
 			l.addToken(token.ILLEGAL, nil)
@@ -148,7 +180,17 @@ func (l *Lexer) scanToken() {
 		}
 		l.addToken(token.STRING, value)
 	default:
-		// If we reach here, it means we have an unexpected character
+		if (l.isDigit(c)) {
+			value, err := l.number()
+			if err != nil {
+				l.addToken(token.ILLEGAL, nil)
+				break
+			}
+
+			l.addToken(token.NUMBER, value)
+			break
+		}
+
 		l.addToken(token.ILLEGAL, nil)
 	}
 }
