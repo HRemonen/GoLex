@@ -134,6 +134,25 @@ func (l *Lexer) identifier() token.Type {
 	return tokenType
 }
 
+func (l *Lexer) blockComment() error {
+	for l.peek() != '*' && l.peekNext() != '/' && !l.isAtEnd() {
+		if l.peek() == '\n' {
+			l.line++
+		}
+		l.advance()
+	}
+
+	// Consume the closing */
+	if l.isAtEnd() {
+		return fmt.Errorf("unterminated block comment")
+	}
+
+	l.advance()
+	l.advance()
+
+	return nil
+}
+
 //nolint:funlen,gocyclo // This function is long and complex because it has to handle all the different token types
 func (l *Lexer) scanToken() {
 	c := l.advance()
@@ -162,6 +181,13 @@ func (l *Lexer) scanToken() {
 			// A comment goes until the end of the line
 			for l.peek() != '\n' && !l.isAtEnd() {
 				l.advance()
+			}
+			break
+		} else if l.match('*') {
+			// A block comment goes until the end of the block
+			err := l.blockComment()
+			if err != nil {
+				l.addToken(token.ILLEGAL, nil)
 			}
 			break
 		}

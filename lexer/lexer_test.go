@@ -15,7 +15,7 @@ func TestScanTokens_Characters(t *testing.T) {
 	}{
 		{
 			name:  "Single character tokens",
-			input: "(){}.,-+;/*",
+			input: "() {} . , - + ; / *",
 			expectedTokens: []token.Token{
 				{Type: token.LEFT_PAREN, Lexeme: "(", Literal: nil, Line: 1},
 				{Type: token.RIGHT_PAREN, Lexeme: ")", Literal: nil, Line: 1},
@@ -56,6 +56,32 @@ func TestScanTokens_Characters(t *testing.T) {
 			},
 		},
 		{
+			name:  "Block comment",
+			input: "/* This is a block comment */",
+			expectedTokens: []token.Token{
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
+		{
+			name: "Multiline block comment",
+			input: `/*
+				This is a multiline
+				block comment
+				*/
+			`,
+			expectedTokens: []token.Token{
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 5},
+			},
+		},
+		{
+			name:  "Unterminated block comment",
+			input: "/* This is an unterminated block comment",
+			expectedTokens: []token.Token{
+				{Type: token.ILLEGAL, Lexeme: "/* This is an unterminated block comment", Literal: nil, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
+		{
 			name:  "One or two character operators",
 			input: "! != = == < <= > >=",
 			expectedTokens: []token.Token{
@@ -85,6 +111,7 @@ func TestScanTokens_Characters(t *testing.T) {
 	}
 }
 
+//nolint:funlen // This is a test function
 func TestScanTokens_Literals(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -128,6 +155,45 @@ func TestScanTokens_Literals(t *testing.T) {
 			input: "123.45",
 			expectedTokens: []token.Token{
 				{Type: token.NUMBER, Lexeme: "123.45", Literal: 123.45, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
+		{
+			name:  "IDENTIFIER: Single character",
+			input: "a",
+			expectedTokens: []token.Token{
+				{Type: token.IDENTIFIER, Lexeme: "a", Literal: nil, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
+		{
+			name:  "IDENTIFIER: Multiple characters",
+			input: "abc",
+			expectedTokens: []token.Token{
+				{Type: token.IDENTIFIER, Lexeme: "abc", Literal: nil, Line: 1},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
+			},
+		},
+		{
+			name:  "IDENTIFIER: Keywords",
+			input: "and class else false for fun if null or print return super this true var while",
+			expectedTokens: []token.Token{
+				{Type: token.AND, Lexeme: "and", Literal: nil, Line: 1},
+				{Type: token.CLASS, Lexeme: "class", Literal: nil, Line: 1},
+				{Type: token.ELSE, Lexeme: "else", Literal: nil, Line: 1},
+				{Type: token.FALSE, Lexeme: "false", Literal: nil, Line: 1},
+				{Type: token.FOR, Lexeme: "for", Literal: nil, Line: 1},
+				{Type: token.FUN, Lexeme: "fun", Literal: nil, Line: 1},
+				{Type: token.IF, Lexeme: "if", Literal: nil, Line: 1},
+				{Type: token.NULL, Lexeme: "null", Literal: nil, Line: 1},
+				{Type: token.OR, Lexeme: "or", Literal: nil, Line: 1},
+				{Type: token.PRINT, Lexeme: "print", Literal: nil, Line: 1},
+				{Type: token.RETURN, Lexeme: "return", Literal: nil, Line: 1},
+				{Type: token.SUPER, Lexeme: "super", Literal: nil, Line: 1},
+				{Type: token.THIS, Lexeme: "this", Literal: nil, Line: 1},
+				{Type: token.TRUE, Lexeme: "true", Literal: nil, Line: 1},
+				{Type: token.VAR, Lexeme: "var", Literal: nil, Line: 1},
+				{Type: token.WHILE, Lexeme: "while", Literal: nil, Line: 1},
 				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1},
 			},
 		},
