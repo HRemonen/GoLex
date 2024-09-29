@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"fmt"
 	"golox/token"
 )
 
@@ -50,6 +51,29 @@ func (l *Lexer) peek() rune {
 	}
 
 	return rune(l.source[l.current])
+}
+
+func (l *Lexer) string() (string, error) {
+	for l.peek() != '"' && !l.isAtEnd() {
+		if l.peek() == '\n' {
+			l.line++
+		}
+		l.advance()
+	}
+
+	fmt.Println(l.peek())
+
+	if l.isAtEnd() {
+		return "", fmt.Errorf("Unterminated string")
+	}
+
+	// The closing "
+	l.advance()
+
+	// Trim the surrounding quotes
+	value := l.source[l.start+1 : l.current-1]
+	fmt.Println(value)
+	return value, nil
 }
 
 func (l *Lexer) scanToken() {
@@ -116,6 +140,14 @@ func (l *Lexer) scanToken() {
 		l.line++
 		// Ignore newline
 		break
+	case '"':
+		// String literals
+		value, err := l.string()
+		if err != nil {
+			l.addToken(token.ILLEGAL, nil)
+			break
+		}
+		l.addToken(token.STRING, value)
 	default:
 		// If we reach here, it means we have an unexpected character
 		l.addToken(token.ILLEGAL, nil)
