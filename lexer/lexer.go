@@ -53,6 +53,9 @@ func (l *Lexer) scanToken() {
 		l.addToken(token.SEMICOLON, nil)
 	case '*':
 		l.addToken(token.STAR, nil)
+	default:
+		// If we reach here, it means we have an unexpected character
+		l.addToken(token.ILLEGAL, nil)
 	}
 }
 
