@@ -31,3 +31,29 @@ Go Lox supports the following data types:
   ""; // Empty string
   ```
 - *Null*. Null is used for "no value" values. Original JLox features `nil` as the nullish value, but since the intepreter here is writtern in Go, which already has nil, we are going to use `null`.
+
+
+## Comments
+
+Go Lox supports two types of comments; single line and multiline block comments.
+
+Comments are ignored by the Lexer like you would expect from any language.
+
+Single line comments are defined using two forward slashes:
+```go
+// This is a comment and will be ignored by the interpreter until EOL
+...
+```
+
+Block comments are defined the same way as in C or Go for example:
+```go
+/*
+This is a block comment
+which can contain multiple lines
+
+Yay!
+*/
+```
+
+Block comments must always be closed, singleline comments are automatically "closed" by the EOF token.
+
