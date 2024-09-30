@@ -17,6 +17,7 @@ type Lexer struct {
 	start   int // Start of the current lexeme
 	current int // Current character being looked at
 	line    int // Current line number
+	column  int // Current column number
 }
 
 // New creates a new lexer
@@ -27,6 +28,7 @@ func New(source string) *Lexer {
 		start:   0,
 		current: 0,
 		line:    1,
+		column:  1,
 	}
 }
 
@@ -43,6 +45,7 @@ func (l *Lexer) ScanTokens() {
 		Lexeme:  "",
 		Literal: nil,
 		Line:    l.line,
+		Column:  l.column,
 	})
 }
 
@@ -74,7 +77,7 @@ func (l *Lexer) scanToken() {
 	case ' ', '\r', '\t':
 		// Ignore whitespace
 	case '\n':
-		l.line++
+		l.advanceLine()
 	case '/':
 		if l.match('/') {
 			l.lineComment()
@@ -108,7 +111,7 @@ func (l *Lexer) scanToken() {
 func (l *Lexer) processString() {
 	for l.peek() != '"' && !l.isAtEnd() {
 		if l.peek() == '\n' {
-			l.line++
+			l.advanceLine()
 		}
 		l.advance()
 	}
@@ -165,7 +168,7 @@ func (l *Lexer) processIdentifier() {
 func (l *Lexer) blockComment() {
 	for !(l.peek() == '*' && l.peekNext() == '/') && !l.isAtEnd() {
 		if l.peek() == '\n' {
-			l.line++
+			l.advanceLine()
 		}
 		l.advance()
 	}
@@ -189,11 +192,14 @@ func (l *Lexer) lineComment() {
 // Adds a token to the list
 func (l *Lexer) addToken(tokenType token.Type, literal interface{}) {
 	text := l.source[l.start:l.current]
+	tokenColumn := l.column - (l.current - l.start)
+
 	l.Tokens = append(l.Tokens, token.Token{
 		Type:    tokenType,
 		Lexeme:  text,
 		Literal: literal,
 		Line:    l.line,
+		Column:  tokenColumn,
 	})
 }
 
@@ -205,7 +211,14 @@ func (l *Lexer) addIllegalToken() {
 // Advances the lexer to the next character
 func (l *Lexer) advance() rune {
 	l.current++
+	l.column++
 	return rune(l.source[l.current-1])
+}
+
+// Advances to the next line
+func (l *Lexer) advanceLine() {
+	l.line++
+	l.column = 1
 }
 
 // Matches the current character with an expected one
@@ -214,6 +227,7 @@ func (l *Lexer) match(expected rune) bool {
 		return false
 	}
 	l.current++
+	l.column++
 	return true
 }
 
