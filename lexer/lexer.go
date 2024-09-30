@@ -31,6 +31,131 @@ func New(source string) *Lexer {
 	}
 }
 
+// ScanTokens scans the source code and converts it into a list of tokens
+func (l *Lexer) ScanTokens() {
+	for !l.isAtEnd() {
+		l.start = l.current
+		l.scanToken()
+	}
+
+	// Add EOF token to the end of the tokens list
+	l.Tokens = append(l.Tokens, token.Token{
+		Type:    token.EOF,
+		Lexeme:  "",
+		Literal: nil,
+		Line:    l.line,
+	})
+}
+
+//nolint:funlen,gocyclo // This function is long and complex because it has to handle all the different token types
+func (l *Lexer) scanToken() {
+	c := l.advance()
+
+	switch c {
+	case '(':
+		l.addToken(token.LEFT_PAREN, nil)
+	case ')':
+		l.addToken(token.RIGHT_PAREN, nil)
+	case '{':
+		l.addToken(token.LEFT_BRACE, nil)
+	case '}':
+		l.addToken(token.RIGHT_BRACE, nil)
+	case ',':
+		l.addToken(token.COMMA, nil)
+	case '.':
+		l.addToken(token.DOT, nil)
+	case '-':
+		l.addToken(token.MINUS, nil)
+	case '+':
+		l.addToken(token.PLUS, nil)
+	case ';':
+		l.addToken(token.SEMICOLON, nil)
+	case '*':
+		l.addToken(token.STAR, nil)
+	case ' ', '\r', '\t':
+		// Ignore whitespace
+	case '\n':
+		// Ignore newline
+		l.line++
+	case '/':
+		if l.match('/') {
+			// A comment goes until the end of the line
+			for l.peek() != '\n' && !l.isAtEnd() {
+				l.advance()
+			}
+		} else if l.match('*') {
+			// A block comment goes until the end of the block
+			err := l.blockComment()
+			if err != nil {
+				l.addToken(token.ILLEGAL, nil)
+			}
+		} else {
+			l.addToken(token.SLASH, nil)
+		}
+	case '!':
+		if l.match('=') {
+			l.addToken(token.BANG_EQUAL, nil)
+		} else {
+			l.addToken(token.BANG, nil)
+		}
+	case '=':
+		if l.match('=') {
+			l.addToken(token.EQUAL_EQUAL, nil)
+		} else {
+			l.addToken(token.EQUAL, nil)
+		}
+	case '<':
+		if l.match('=') {
+			l.addToken(token.LESS_EQUAL, nil)
+		} else {
+			l.addToken(token.LESS, nil)
+		}
+	case '>':
+		if l.match('=') {
+			l.addToken(token.GREATER_EQUAL, nil)
+		} else {
+			l.addToken(token.GREATER, nil)
+		}
+	case '"': // String literals
+		value, err := l.string()
+		if err != nil {
+			l.addToken(token.ILLEGAL, nil)
+		} else {
+			l.addToken(token.STRING, value)
+		}
+	default:
+		if l.isDigit(c) {
+			value, err := l.number()
+			if err != nil {
+				l.addToken(token.ILLEGAL, nil)
+			} else {
+				l.addToken(token.NUMBER, value)
+			}
+		} else if l.isAlpha(c) {
+			value := l.identifier()
+
+			l.addToken(value, nil)
+		} else {
+			l.addToken(token.ILLEGAL, nil)
+		}
+	}
+}
+
+func (l *Lexer) addToken(tokenType token.Type, literal interface{}) {
+	text := l.source[l.start:l.current]
+	l.Tokens = append(l.Tokens, token.Token{
+		Type:    tokenType,
+		Lexeme:  text,
+		Literal: literal,
+		Line:    l.line,
+	})
+}
+
+func (l *Lexer) advance() rune {
+	l.current++
+	return rune(l.source[l.current-1])
+}
+
 // isAtEnd checks if the lexer has reached the end of the source code
 func (l *Lexer) isAtEnd() bool {
 	return l.current >= len(l.source)
@@ -151,133 +276,4 @@ func (l *Lexer) blockComment() error {
 	l.advance()
 
 	return nil
-}
-
-//nolint:funlen,gocyclo // This function is long and complex because it has to handle all the different token types
-func (l *Lexer) scanToken() {
-	c := l.advance()
-
-	switch c {
-	case '(':
-		l.addToken(token.LEFT_PAREN, nil)
-	case ')':
-		l.addToken(token.RIGHT_PAREN, nil)
-	case '{':
-		l.addToken(token.LEFT_BRACE, nil)
-	case '}':
-		l.addToken(token.RIGHT_BRACE, nil)
-	case ',':
-		l.addToken(token.COMMA, nil)
-	case '.':
-		l.addToken(token.DOT, nil)
-	case '-':
-		l.addToken(token.MINUS, nil)
-	case '+':
-		l.addToken(token.PLUS, nil)
-	case ';':
-		l.addToken(token.SEMICOLON, nil)
-	case '*':
-		l.addToken(token.STAR, nil)
-	case ' ', '\r', '\t': 
-		// Ignore whitespace
-	case '\n': 
-		// Ignore newline
-		l.line++
-	case '/':
-		if l.match('/') {
-			// A comment goes until the end of the line
-			for l.peek() != '\n' && !l.isAtEnd() {
-				l.advance()
-			}
-			break
-		} else if l.match('*') {
-			// A block comment goes until the end of the block
-			err := l.blockComment()
-			if err != nil {
-				l.addToken(token.ILLEGAL, nil)
-			}
-			break
-		}
-		l.addToken(token.SLASH, nil)
-	case '!':
-		if l.match('=') {
-			l.addToken(token.BANG_EQUAL, nil)
-			break
-		}
-		l.addToken(token.BANG, nil)
-	case '=':
-		if l.match('=') {
-			l.addToken(token.EQUAL_EQUAL, nil)
-			break
-		}
-		l.addToken(token.EQUAL, nil)
-	case '<':
-		if l.match('=') {
-			l.addToken(token.LESS_EQUAL, nil)
-			break
-		}
-		l.addToken(token.LESS, nil)
-	case '>':
-		if l.match('=') {
-			l.addToken(token.GREATER_EQUAL, nil)
-			break
-		}
-		l.addToken(token.GREATER, nil)
-	case '"': // String literals
-		value, err := l.string()
-		if err != nil {
-			l.addToken(token.ILLEGAL, nil)
-			break
-		}
-		l.addToken(token.STRING, value)
-	default:
-		if l.isDigit(c) {
-			value, err := l.number()
-			if err != nil {
-				l.addToken(token.ILLEGAL, nil)
-				break
-			}
-
-			l.addToken(token.NUMBER, value)
-			break
-		} else if l.isAlpha(c) {
-			value := l.identifier()
-
-			l.addToken(value, nil)
-			break
-		}
-
-		l.addToken(token.ILLEGAL, nil)
-	}
-}
-
-func (l *Lexer) advance() rune {
-	l.current++
-	return rune(l.source[l.current-1])
-}
-
-func (l *Lexer) addToken(tokenType token.Type, literal interface{}) {
-	text := l.source[l.start:l.current]
-	l.Tokens = append(l.Tokens, token.Token{
-		Type:    tokenType,
-		Lexeme:  text,
-		Literal: literal,
-		Line:    l.line,
-	})
-}
-
-// ScanTokens scans the source code and converts it into a list of tokens
-func (l *Lexer) ScanTokens() {
-	for !l.isAtEnd() {
-		l.start = l.current
-		l.scanToken()
-	}
-
-	// Add EOF token to the end of the tokens list
-	l.Tokens = append(l.Tokens, token.Token{
-		Type:    token.EOF,
-		Lexeme:  "",
-		Literal: nil,
-		Line:    l.line,
-	})
 }
