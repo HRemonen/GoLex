@@ -66,10 +66,16 @@ func main() {
 
 This project includes tests for various parts of the lexer, particularly for string literals and handling of special characters.
 
-To run the tests, use:
+To run the tests for a single package, use the directory:
 
 ```bash
 go test -v ./lexer
+```
+
+To run all the tests:
+
+```bash
+go test ./...
 ```
 
 ## Linting
