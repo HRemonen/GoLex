@@ -14,10 +14,10 @@ import (
 type Lexer struct {
 	source  string
 	Tokens  []token.Token
-	start   int // Start of the current lexeme
-	current int // Current character being looked at
-	line    int // Current line number
-	column  int // Current column number
+	start   int // Start of the current lexeme starting from 0
+	current int // Current character being looked at starting from 0
+	line    int // Current line number starting from 1
+	column  int // Current column number starting from 1
 }
 
 // New creates a new lexer
@@ -50,6 +50,8 @@ func (l *Lexer) ScanTokens() {
 }
 
 // scanToken processes a single token
+//
+//nolint:funlen // This function is long but it's mostly a switch statement
 func (l *Lexer) scanToken() {
 	c := l.advance()
 

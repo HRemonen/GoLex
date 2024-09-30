@@ -14,7 +14,7 @@ type Token struct {
 	Lexeme  string      // The actual string of the token
 	Literal interface{} // The literal value of the token
 	Line    int         // Line number where the token was found
-	Column	int         // Column number where the token was found
+	Column  int         // Column number where the token was found
 }
 
 //nolint:revive,stylecheck // Constants are in uppercase
