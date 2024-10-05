@@ -12,10 +12,8 @@ import (
 // AstPrinter is a visitor that prints the AST
 type AstPrinter struct{}
 
-// PrintAst prints the AST of the expression
-func PrintAst(expression expr.Expr) string {
-	printer := AstPrinter{}
-	return printer.Print(expression)
+func New() *AstPrinter {
+	return &AstPrinter{}
 }
 
 // Print the expression

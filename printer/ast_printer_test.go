@@ -158,7 +158,8 @@ func TestAstPrinter_SingleExprs(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := PrintAst(tt.expr)
+			printer := New()
+			actual := printer.Print(tt.expr)
 
 			if actual != tt.expected {
 				t.Errorf("PrintAst() = %v, want %v", actual, tt.expected)
@@ -340,7 +341,8 @@ func TestAstPrinter_ComplexExprs(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := PrintAst(tt.expr)
+			printer := New()
+			actual := printer.Print(tt.expr)
 
 			if actual != tt.expected {
 				t.Errorf("PrintAst() = %v, want %v", actual, tt.expected)
