@@ -7,6 +7,8 @@ import (
 	"bufio"
 	"fmt"
 	"golox/lexer"
+	"golox/parser"
+	"golox/printer"
 	"io"
 )
 
@@ -34,8 +36,10 @@ func Start(in io.Reader, out io.Writer) {
 
 		l.ScanTokens()
 
-		for _, t := range l.Tokens {
-			fmt.Println(t)
-		}
+		p := parser.New(l.Tokens)
+		expr := p.Parse()
+
+		printer := printer.New()
+		fmt.Println(printer.Print(expr))
 	}
 }
