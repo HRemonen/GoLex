@@ -123,7 +123,7 @@ func (p *Parser) primary() expr.Expr {
 	return nil
 }
 
-// check if the current token is any of the given types. If it does, consume it
+// Check if the current token is any of the given types. If it does, consume it
 func (p *Parser) match(types ...token.Type) bool {
 	for _, t := range types {
 		if p.check(t) {
@@ -134,7 +134,7 @@ func (p *Parser) match(types ...token.Type) bool {
 	return false
 }
 
-// consume the current token if it is of the given type. If it is not, panic with the given message
+// Consume the current token if it is of the given type. If it is not, panic with the given message
 func (p *Parser) consume(t token.Type, message string) *token.Token {
 	if p.check(t) {
 		return p.advance()
@@ -147,7 +147,7 @@ func (p *Parser) consume(t token.Type, message string) *token.Token {
 	return nil
 }
 
-// check if the current token is of the given type without consuming it
+// Check if the current token is of the given type without consuming it
 func (p *Parser) check(t token.Type) bool {
 	if p.isAtEnd() {
 		return false
@@ -155,7 +155,7 @@ func (p *Parser) check(t token.Type) bool {
 	return p.peek().Type == t
 }
 
-// consume the current token and return it
+// Consume the current token and return it
 func (p *Parser) advance() *token.Token {
 	if !p.isAtEnd() {
 		p.current++
@@ -163,21 +163,40 @@ func (p *Parser) advance() *token.Token {
 	return p.previous()
 }
 
-// check if we have reached the end of the token list
+// Check if we have reached the end of the token list
 func (p *Parser) isAtEnd() bool {
 	return p.peek().Type == token.EOF
 }
 
-// return the current token yet to be consumed
+// Return the current token yet to be consumed
 func (p *Parser) peek() *token.Token {
 	return &p.tokens[p.current]
 }
 
-// return the previous token that was consumed
+// Return the previous token that was consumed
 func (p *Parser) previous() *token.Token {
 	return &p.tokens[p.current-1]
 }
 
 func parseError(t *token.Token, message string) *error.Error {
 	return error.New(t, message)
+}
+
+// Synchronize the parser after an error has been encountered
+// This is done by skipping tokens until a statement boundary is reached
+func (p *Parser) synchronize() {
+	p.advance()
+
+	for !p.isAtEnd() {
+		if p.previous().Type == token.SEMICOLON {
+			return
+		}
+
+		switch p.peek().Type {
+		case token.CLASS, token.FUN, token.VAR, token.FOR, token.IF, token.WHILE, token.PRINT, token.RETURN:
+			return
+		}
+
+		p.advance()
+	}
 }
