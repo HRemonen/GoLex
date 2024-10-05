@@ -191,13 +191,10 @@ func TestParser_Expressions(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Create a new parser instance with the test tokens
 			p := New(tt.tokens)
 
-			// Parse the expression
-			expression := p.expression()
+			expression := p.Parse()
 
-			// Check if the parsed expression matches the expected AST
 			if !reflect.DeepEqual(expression, tt.expected) {
 				t.Errorf("Test failed: %s\nExpected: %#v\nGot: %#v", tt.name, tt.expected, expression)
 			}
@@ -258,10 +255,9 @@ func TestParser_InvalidCode(t *testing.T) {
 				}
 			}()
 
-			// Run the parser, expecting an error to be raised
 			p := New(tt.tokens)
 
-			p.expression() // Should trigger error
+			p.Parse()
 		})
 	}
 }

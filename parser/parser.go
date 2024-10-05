@@ -15,6 +15,19 @@ func New(tokens []token.Token) *Parser {
 	return &Parser{tokens: tokens, current: 0}
 }
 
+// Parse the tokens into an expression
+func (p *Parser) Parse() expr.Expr {
+	defer func() {
+		if r := recover(); r != nil {
+			if err, ok := r.(*error.Error); ok {
+				panic(err)
+			}
+		}
+	}()
+	
+	return p.expression()
+}
+
 // Expression maps to the CFG rule: expression → equality ;
 func (p *Parser) expression() expr.Expr {
 	return p.equality()
