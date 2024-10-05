@@ -1,15 +1,23 @@
 /*
 Package parser implements a recursive descent parser for the GoLox language.
 
+Recursive descent parsing is a top-down parsing technique where the parser starts at the top
+of the grammar and works its way down to the input tokens. The parser uses a set of recursive
+procedures to parse the input tokens.
+
+In a top-down parser, we are reaching the lowerst-precedence operators first and then working
+our way up to the highest-precedence operators.
+
 Parser Context-Free Grammar (CFG):
 
-	expression     → equality ;
+	expression     → ternary ; 																													// Has the lowest precedence
+	ternary        → equality ("?" expression ":" expression)? ;
 	equality       → comparison ( ( "!=" | "==" ) comparison )* ;
 	comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 	term           → factor ( ( "-" | "+" ) factor )* ;
 	factor         → unary ( ( "/" | "*" ) unary )* ;
 	unary          → ( "!" | "-" ) unary | primary ;
-	primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+	primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ; 	// Has the highest precedence
 
 The parser is implemented as a recursive descent parser. Each non-terminal in the grammar
 is implemented as a function that corresponds to the rule in the grammar. The functions
@@ -50,9 +58,25 @@ func (p *Parser) Parse() expr.Expr {
 	return p.expression()
 }
 
-// Expression maps to the CFG rule: expression → equality ;
+// Expression maps to the CFG rule: expression → ternary ;
 func (p *Parser) expression() expr.Expr {
-	return p.equality()
+	return p.ternary()
+}
+
+func (p *Parser) ternary() expr.Expr {
+	expression := p.equality()
+
+	if p.match(token.QUESTION) {
+		trueBranch := p.expression()
+
+		p.consume(token.COLON, "Expect ':' after true branch of ternary expression.")
+
+		falseBranch := p.expression()
+		return &expr.Ternary{Condition: expression, TrueBranch: trueBranch, FalseBranch: falseBranch}
+	}
+
+	// If there is no ternary operator, return the expression (equality)
+	return expression
 }
 
 // Equality maps to the CFG rule: equality → comparison ( ( "!=" | "==" ) comparison )* ;

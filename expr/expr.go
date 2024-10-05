@@ -26,6 +26,7 @@ type Visitor interface {
 	VisitThisExpr(expr *This) interface{}
 	VisitUnaryExpr(expr *Unary) interface{}
 	VisitVariableExpr(expr *Variable) interface{}
+	VisitTernaryExpr(expr *Ternary) interface{}
 }
 
 // Assign represents an assignment expression
@@ -158,4 +159,16 @@ type Variable struct {
 // Accept implements the Expr interface
 func (e *Variable) Accept(v Visitor) interface{} {
 	return v.VisitVariableExpr(e)
+}
+
+// Ternary represents a ternary expression
+type Ternary struct {
+	Condition   Expr
+	TrueBranch  Expr
+	FalseBranch Expr
+}
+
+// Accept implements the Expr interface
+func (e *Ternary) Accept(v Visitor) interface{} {
+	return v.VisitTernaryExpr(e)
 }

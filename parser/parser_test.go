@@ -186,6 +186,71 @@ func TestParser_Expressions(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "Ternary Operator (true ? 1 : 2)",
+			tokens: []token.Token{
+				{Type: token.TRUE, Literal: true},
+				{Type: token.QUESTION, Literal: "?"},
+				{Type: token.NUMBER, Literal: 1},
+				{Type: token.COLON, Literal: ":"},
+				{Type: token.NUMBER, Literal: 2},
+				{Type: token.EOF},
+			},
+			expected: &expr.Ternary{
+				Condition:   &expr.Literal{Value: true},
+				TrueBranch:  &expr.Literal{Value: 1},
+				FalseBranch: &expr.Literal{Value: 2},
+			},
+		},
+		{
+			name: "Ternary Operator with Nested Ternary (true ? 1 : false ? 2 : 3)",
+			tokens: []token.Token{
+				{Type: token.TRUE, Literal: true},
+				{Type: token.QUESTION, Literal: "?"},
+				{Type: token.NUMBER, Literal: 1},
+				{Type: token.COLON, Literal: ":"},
+				{Type: token.FALSE, Literal: false},
+				{Type: token.QUESTION, Literal: "?"},
+				{Type: token.NUMBER, Literal: 2},
+				{Type: token.COLON, Literal: ":"},
+				{Type: token.NUMBER, Literal: 3},
+				{Type: token.EOF},
+			},
+			expected: &expr.Ternary{
+				Condition:  &expr.Literal{Value: true},
+				TrueBranch: &expr.Literal{Value: 1},
+				FalseBranch: &expr.Ternary{
+					Condition:   &expr.Literal{Value: false},
+					TrueBranch:  &expr.Literal{Value: 2},
+					FalseBranch: &expr.Literal{Value: 3},
+				},
+			},
+		},
+		{
+			name: "Ternary Operator with Nested Ternary (false ? true ? 1 : 2 : 3)",
+			tokens: []token.Token{
+				{Type: token.FALSE, Literal: false},
+				{Type: token.QUESTION, Literal: "?"},
+				{Type: token.TRUE, Literal: true},
+				{Type: token.QUESTION, Literal: "?"},
+				{Type: token.NUMBER, Literal: 1},
+				{Type: token.COLON, Literal: ":"},
+				{Type: token.NUMBER, Literal: 2},
+				{Type: token.COLON, Literal: ":"},
+				{Type: token.NUMBER, Literal: 3},
+				{Type: token.EOF},
+			},
+			expected: &expr.Ternary{
+				Condition: &expr.Literal{Value: false},
+				TrueBranch: &expr.Ternary{
+					Condition:   &expr.Literal{Value: true},
+					TrueBranch:  &expr.Literal{Value: 1},
+					FalseBranch: &expr.Literal{Value: 2},
+				},
+				FalseBranch: &expr.Literal{Value: 3},
+			},
+		},
+
 	}
 
 	for _, tt := range tests {

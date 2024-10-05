@@ -14,7 +14,7 @@ func TestScanTokens_Characters(t *testing.T) {
 	}{
 		{
 			name:  "Single character tokens",
-			input: "() {} . , - + ; / *",
+			input: "() {} . , - + ; / * ? :",
 			expectedTokens: []token.Token{
 				{Type: token.LEFT_PAREN, Lexeme: "(", Literal: nil, Line: 1, Column: 1},
 				{Type: token.RIGHT_PAREN, Lexeme: ")", Literal: nil, Line: 1, Column: 2},
@@ -27,7 +27,9 @@ func TestScanTokens_Characters(t *testing.T) {
 				{Type: token.SEMICOLON, Lexeme: ";", Literal: nil, Line: 1, Column: 15},
 				{Type: token.SLASH, Lexeme: "/", Literal: nil, Line: 1, Column: 17},
 				{Type: token.STAR, Lexeme: "*", Literal: nil, Line: 1, Column: 19},
-				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1, Column: 20},
+				{Type: token.QUESTION, Lexeme: "?", Literal: nil, Line: 1, Column: 21},
+				{Type: token.COLON, Lexeme: ":", Literal: nil, Line: 1, Column: 23},
+				{Type: token.EOF, Lexeme: "", Literal: nil, Line: 1, Column: 24},
 			},
 		},
 		{

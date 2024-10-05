@@ -76,6 +76,10 @@ func (l *Lexer) scanToken() {
 		l.addToken(token.SEMICOLON, nil)
 	case '*':
 		l.addToken(token.STAR, nil)
+	case '?':
+		l.addToken(token.QUESTION, nil)
+	case ':':
+		l.addToken(token.COLON, nil)
 	case ' ', '\r', '\t':
 		// Ignore whitespace
 	case '\n':

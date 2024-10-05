@@ -98,6 +98,11 @@ func (a *AstPrinter) VisitSuperExpr(_ *expr.Super) interface{} {
 	return "super"
 }
 
+// VisitTernaryExpr implements the Visitor interface
+func (a *AstPrinter) VisitTernaryExpr(e *expr.Ternary) interface{} {
+	return a.parenthesize("?", e.Condition, e.TrueBranch, e.FalseBranch)
+}
+
 func (a *AstPrinter) parenthesize(name string, parts ...interface{}) string {
 	var str strings.Builder
 
