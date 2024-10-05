@@ -1,5 +1,22 @@
 /*
 Package parser implements a recursive descent parser for the GoLox language.
+
+Parser Context-Free Grammar (CFG):
+
+	expression     → equality ;
+	equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+	comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+	term           → factor ( ( "-" | "+" ) factor )* ;
+	factor         → unary ( ( "/" | "*" ) unary )* ;
+	unary          → ( "!" | "-" ) unary | primary ;
+	primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+
+The parser is implemented as a recursive descent parser. Each non-terminal in the grammar
+is implemented as a function that corresponds to the rule in the grammar. The functions
+are called recursively to parse the input tokens.
+
+The parser is also responsible for error handling. If an error is encountered, the parser
+will panic with an error message that contains the token where the error occurred.
 */
 package parser
 
