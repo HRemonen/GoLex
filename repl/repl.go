@@ -39,7 +39,7 @@ func Start(in io.Reader, out io.Writer) {
 		p := parser.New(l.Tokens)
 		expr := p.Parse()
 
-		printer := printer.New()
-		fmt.Println(printer.Print(expr))
+		prtr := printer.New()
+		fmt.Println(prtr.Print(expr))
 	}
 }
