@@ -120,6 +120,11 @@ func (p *Parser) primary() expr.Expr {
 		return &expr.Grouping{Expression: expression}
 	}
 
+	// If none of the above match, we have an error
+	if err := parseError(p.peek(), "Expect expression."); err != nil {
+		panic(err)
+	}
+
 	return nil
 }
 

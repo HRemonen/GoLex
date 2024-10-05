@@ -122,13 +122,6 @@ func TestParser_Expressions(t *testing.T) {
 			},
 		},
 		{
-			name: "Empty Expression",
-			tokens: []token.Token{
-				{Type: token.EOF},
-			},
-			expected: nil,
-		},
-		{
 			name: "Deeply Nested Grouping (((1 + 2)))",
 			tokens: []token.Token{
 				{Type: token.LEFT_PAREN, Literal: "("},
@@ -228,6 +221,24 @@ func TestParser_InvalidCode(t *testing.T) {
 				{Type: token.EOF},
 			},
 			expectedErr: "Expect ')' after expression.",
+		},
+		{
+			name: "Missing expression in parentheses (1 + )",
+			tokens: []token.Token{
+				{Type: token.LEFT_PAREN, Literal: "("},
+				{Type: token.NUMBER, Literal: 1},
+				{Type: token.PLUS, Literal: "+"},
+				{Type: token.RIGHT_PAREN, Literal: ")"},
+				{Type: token.EOF},
+			},
+			expectedErr: "Expect expression.",
+		},
+		{
+			name: "Empty expression",
+			tokens: []token.Token{
+				{Type: token.EOF},
+			},
+			expectedErr: "Expect expression.",
 		},
 	}
 
