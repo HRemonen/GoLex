@@ -12,6 +12,7 @@ import (
 // AstPrinter is a visitor that prints the AST
 type AstPrinter struct{}
 
+// New creates a new AstPrinter
 func New() *AstPrinter {
 	return &AstPrinter{}
 }
