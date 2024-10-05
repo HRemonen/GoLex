@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-//nolint:funlen // This is a test function
 func TestScanTokens_Characters(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -111,7 +110,6 @@ func TestScanTokens_Characters(t *testing.T) {
 	}
 }
 
-//nolint:funlen // This is a test function
 func TestScanTokens_Literals(t *testing.T) {
 	tests := []struct {
 		name           string

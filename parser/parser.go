@@ -1,3 +1,6 @@
+/*
+Package parser implements a recursive descent parser for the GoLox language.
+*/
 package parser
 
 import (
@@ -6,11 +9,13 @@ import (
 	"golox/token"
 )
 
+// Parser is the recursive descent parser for the GoLox language
 type Parser struct {
 	tokens  []token.Token
 	current int // Next token to be parsed
 }
 
+// New creates a new parser with the given tokens
 func New(tokens []token.Token) *Parser {
 	return &Parser{tokens: tokens, current: 0}
 }
@@ -24,7 +29,7 @@ func (p *Parser) Parse() expr.Expr {
 			}
 		}
 	}()
-	
+
 	return p.expression()
 }
 

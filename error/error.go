@@ -1,3 +1,6 @@
+/*
+Package error provides an error type for the GoLox language.
+*/
 package error
 
 import (
@@ -11,7 +14,7 @@ type Error struct {
 	Token   *token.Token
 }
 
-// NewError creates a new error
+// New creates a new error
 func New(t *token.Token, message string) *Error {
 	return &Error{
 		Message: message,
