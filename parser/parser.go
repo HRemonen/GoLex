@@ -11,6 +11,10 @@ type Parser struct {
 	current int // Next token to be parsed
 }
 
+func New(tokens []token.Token) *Parser {
+	return &Parser{tokens: tokens, current: 0}
+}
+
 // Expression maps to the CFG rule: expression → equality ;
 func (p *Parser) expression() expr.Expr {
 	return p.equality()
@@ -139,7 +143,7 @@ func (p *Parser) consume(t token.Type, message string) *token.Token {
 	if err := parseError(p.peek(), message); err != nil {
 		panic(err)
 	}
-	
+
 	return nil
 }
 
