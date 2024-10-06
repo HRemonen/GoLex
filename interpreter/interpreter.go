@@ -28,6 +28,8 @@ func (i *Interpreter) VisitUnaryExpr(e *expr.Unary) interface{} {
 	case token.BANG:
 		return !isTruthy(right)
 	case token.MINUS:
+		checkNumberOperand(e.Operator, right)
+		
 		return -right.(float64)
 	}
 
@@ -104,4 +106,10 @@ func isEqual(a, b interface{}) bool {
 	}
 
 	return a == b
+}
+
+func checkNumberOperand(operator *token.Token, operand interface{}) {
+	if _, ok := operand.(float64); !ok {
+		panic("Invalid operation: operator '" + operator.Lexeme + "' not defined on '" + operand.(string) + "'")
+	}
 }
