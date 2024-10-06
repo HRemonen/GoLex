@@ -35,7 +35,7 @@ func (a *AstPrinter) VisitGroupingExpr(e *expr.Grouping) interface{} {
 // VisitLiteralExpr implements the Visitor interface
 func (a *AstPrinter) VisitLiteralExpr(e *expr.Literal) interface{} {
 	if e.Value == nil {
-		return "nil"
+		return "null"
 	}
 	return fmt.Sprintf("%v", e.Value)
 }
