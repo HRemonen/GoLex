@@ -250,7 +250,6 @@ func TestParser_Expressions(t *testing.T) {
 				FalseBranch: &expr.Literal{Value: 3},
 			},
 		},
-
 	}
 
 	for _, tt := range tests {
@@ -300,6 +299,16 @@ func TestParser_InvalidCode(t *testing.T) {
 				{Type: token.EOF},
 			},
 			expectedErr: "Expect expression.",
+		},
+		{
+			name: "Missing false ternary branch (true ? 1 )",
+			tokens: []token.Token{
+				{Type: token.TRUE, Literal: true},
+				{Type: token.QUESTION, Literal: "?"},
+				{Type: token.NUMBER, Literal: 1},
+				{Type: token.EOF},
+			},
+			expectedErr: "Expect ':' after true branch of ternary expression.",
 		},
 	}
 
